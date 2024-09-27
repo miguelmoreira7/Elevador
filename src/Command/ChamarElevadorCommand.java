@@ -1,3 +1,6 @@
+package Command;
+import Elevador.Elevador;
+
 public class ChamarElevadorCommand implements Command {
     private Elevador elevador;
     private int andar;

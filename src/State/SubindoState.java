@@ -1,3 +1,6 @@
+package State;
+import Elevador.Elevador;
+
 public class SubindoState implements EstadoElevador {
     private Elevador elevador;
 
@@ -8,7 +11,7 @@ public class SubindoState implements EstadoElevador {
     @Override
     public void executar() {
         System.out.println("Elevador subindo...");
-        int destino = elevador.getFilaRequisicoes().get(0); // Obtém o próximo destino
+        int destino = elevador.getFilaRequisicoes().get(0);
         elevador.moverParaAndar(destino);
     }
 }

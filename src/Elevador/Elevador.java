@@ -1,3 +1,10 @@
+package Elevador;
+
+import State.DescendoState;
+import State.EstadoElevador;
+import State.ParadoState;
+import State.SubindoState;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -65,7 +72,6 @@ public class Elevador {
                 System.out.println("Portas fechando...");
             }
         }
-        setEstado(new ParadoState(this));
     }
 
     public void setEstado(EstadoElevador novoEstado) {
@@ -91,6 +97,7 @@ public class Elevador {
             if (!filaRequisicoes.isEmpty() && filaRequisicoes.get(0) == andarAtual) {
                 System.out.println("Elevador chegou ao andar " + andarAtual + ". Portas abrindo...");
                 filaRequisicoes.remove(0);
+                setEstado(new ParadoState(this));
                 System.out.println("Portas fechando...");
             }
         }
@@ -100,7 +107,7 @@ public class Elevador {
             ordenarFila();
         }
 
-        setEstado(new ParadoState(this));
+//        setEstado(new ParadoState(this));
     }
 
     public void exibirPainel() {
@@ -112,7 +119,7 @@ public class Elevador {
         System.out.println("|");
         System.out.println("+-----------------+");
         String status = (estado instanceof SubindoState) ? "subindo" : (estado instanceof DescendoState) ? "descendo" : "parado";
-        System.out.println("| " + status + " [" + andarAtual + "] |");
+        System.out.println("| " + status + " [" + andarAtual + "]     |");
         System.out.println("+-----------------+");
     }
 
