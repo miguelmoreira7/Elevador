@@ -7,8 +7,6 @@ public class Porta {
             if (!isOpen) {
                 isOpen = true;
                 System.out.println("Porta aberta");
-            } else {
-                System.out.println("Porta já está aberta.");
             }
         }
 
@@ -16,8 +14,6 @@ public class Porta {
             if (isOpen) {
                 isOpen = false;
                 System.out.println("Porta fechada");
-            } else {
-                System.out.println("Porta já está fechada.");
             }
         }
 
