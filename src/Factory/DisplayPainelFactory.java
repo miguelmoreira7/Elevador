@@ -1,6 +1,6 @@
 package Factory;
 
-import Observer.DisplayPanel;
+import Observer.DisplayPanel.DisplayPanel;
 import Elevador.Elevador;
 
 public interface DisplayPainelFactory {

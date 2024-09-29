@@ -1,8 +1,9 @@
-package Observer;
+package Observer.DisplayPanel;
 
 import Elevador.Elevador;
+import Observer.DisplayPanel.DisplayPanel;
 
-public class ExternalDisplayPanel extends DisplayPanel{
+public class ExternalDisplayPanel extends DisplayPanel {
     private int andar;
 
     public ExternalDisplayPanel(Elevador elevador, int andar){
@@ -11,7 +12,7 @@ public class ExternalDisplayPanel extends DisplayPanel{
     }
     @Override
     public void atualizar() {
-        System.out.println("Painel Externo no Andar " + andar + ":");
+        System.out.println("Painel de Display Externo no Andar " + andar + ":");
         System.out.println("+-----------------+");
         System.out.println("| Elevador no Andar: " + getElevador().getAndarAtual());
         System.out.println("| Direção do Elevador: " + getElevador().getDirecao());

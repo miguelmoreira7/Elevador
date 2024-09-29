@@ -1,7 +1,9 @@
 package Factory;
 
 import Elevador.Elevador;
-import Observer.*;
+import Observer.DisplayPanel.DisplayPanel;
+import Observer.DisplayPanel.ExternalDisplayPanel;
+import Observer.DisplayPanel.InternalDisplayPanel;
 
 public class DisplayPainelFactoryConcreta implements DisplayPainelFactory {
 

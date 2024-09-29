@@ -1,8 +1,9 @@
-package Observer;
+package Observer.DisplayPanel;
 
 import Elevador.Elevador;
+import Observer.Observer;
 
-public abstract class DisplayPanel implements Observer{
+public abstract class DisplayPanel implements Observer {
     private Elevador elevador;
 
     public Elevador getElevador(){
