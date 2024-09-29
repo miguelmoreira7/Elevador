@@ -1,17 +1,13 @@
 package State;
-import Elevador.Elevador;
+import Elevador.*;
 
 public class DescendoState implements EstadoElevador {
-    private Elevador elevador;
-
-    public DescendoState(Elevador elevador) {
-        this.elevador = elevador;
-    }
 
     @Override
-    public void executar() {
+    public void executar(Elevador elevador) {
+        elevador.setDirecao(Direcao.descendo);
+        elevador.fecharPortas();
         System.out.println("Elevador descendo...");
-        int destino = elevador.getFilaRequisicoes().get(0);
-        elevador.moverParaAndar(destino);
+        elevador.setAndarAtual(elevador.getAndarAtual() - 1);
     }
 }
