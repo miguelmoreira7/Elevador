@@ -1,15 +1,12 @@
 package State;
-import Elevador.Elevador;
+import Elevador.*;
 
 public class ParadoState implements EstadoElevador {
-    private Elevador elevador;
-
-    public ParadoState(Elevador elevador) {
-        this.elevador = elevador;
-    }
 
     @Override
-    public void executar() {
+    public void executar(Elevador elevador) {
+        elevador.setDirecao(Direcao.parado);
+        elevador.abrirPortas();
         System.out.println("Elevador está parado no andar " + elevador.getAndarAtual());
     }
 }

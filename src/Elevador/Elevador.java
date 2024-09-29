@@ -1,5 +1,7 @@
 package Elevador;
 
+import Observer.DisplayPanel;
+import Observer.Observer;
 import State.DescendoState;
 import State.EstadoElevador;
 import State.ParadoState;
@@ -14,120 +16,133 @@ public class Elevador {
     private int andarAtual;
     private EstadoElevador estado;
     private List<Integer> filaRequisicoes;
-    private boolean subindo;
+    private Direcao direcao;
+    private Porta portas;
+    private List<Observer> observers;
+    private int numPavimentos;
 
     private Elevador(int numPavimentos) {
         this.andarAtual = 0;
         this.filaRequisicoes = new ArrayList<>();
-        this.estado = new ParadoState(this);
-        this.subindo = true;
+        this.estado = new ParadoState();
+        this.direcao = Direcao.parado;
+        this.portas = new Porta();
+        this.observers = new ArrayList<>();
+        this.numPavimentos = numPavimentos;
     }
 
-    public static synchronized Elevador getInstancia(int numPavimentos) {
+    public static Elevador getInstancia(int numPavimentos) {
         if (instancia == null) {
             instancia = new Elevador(numPavimentos);
         }
         return instancia;
     }
 
-    public void requisitarAndar(int andar) {
-        if (!filaRequisicoes.contains(andar)) {
-            filaRequisicoes.add(andar);
-            System.out.println("Andar " + andar + " requisitado.");
-            ordenarFila();
-        }
+    public int getNumPavimentos() {
+        return numPavimentos;
+    }
+    public Direcao getDirecao(){return direcao;}
+    public void setDirecao(Direcao direcao){
+        this.direcao = direcao;
     }
 
-    public void chamarElevador(int andar, boolean subir) {
-        if (!filaRequisicoes.contains(andar)) {
-            filaRequisicoes.add(andar);
-            System.out.println("Elevador chamado no andar " + andar + " para " + (subir ? "subir" : "descer") + ".");
-            ordenarFila();
-        }
-    }
 
-    public void iniciarProcessamento() {
-        System.out.println("Iniciando o processamento da fila de requisições...");
-        processarRequisicoes();
-    }
-
-    private void ordenarFila() {
-        if (subindo) {
-            Collections.sort(filaRequisicoes);
-        } else {
-            Collections.sort(filaRequisicoes, Collections.reverseOrder());
-        }
-    }
-
-    private void processarRequisicoes() {
-        while (!filaRequisicoes.isEmpty()) {
-            int destino = filaRequisicoes.get(0);
-            if (destino > andarAtual) {
-                setEstado(new SubindoState(this));
-            } else if (destino < andarAtual) {
-                setEstado(new DescendoState(this));
-            } else {
-                System.out.println("Elevador chegou ao andar " + andarAtual + ". Portas abrindo...");
-                filaRequisicoes.remove(0);
-                System.out.println("Portas fechando...");
-            }
-        }
-    }
-
-    public void setEstado(EstadoElevador novoEstado) {
-        this.estado = novoEstado;
-        this.estado.executar();
-    }
-
-    public void moverParaAndar(int andarDestino) {
-        while (andarAtual != andarDestino) {
-            if (andarAtual < andarDestino) {
-                andarAtual++;
-            } else if (andarAtual > andarDestino) {
-                andarAtual--;
-            }
-
-            exibirPainel();
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            if (!filaRequisicoes.isEmpty() && filaRequisicoes.get(0) == andarAtual) {
-                System.out.println("Elevador chegou ao andar " + andarAtual + ". Portas abrindo...");
-                filaRequisicoes.remove(0);
-                setEstado(new ParadoState(this));
-                System.out.println("Portas fechando...");
-            }
-        }
-
-        if (subindo && filaRequisicoes.stream().allMatch(a -> a < andarAtual)) {
-            subindo = false;
-            ordenarFila();
-        }
-
-//        setEstado(new ParadoState(this));
-    }
-
-    public void exibirPainel() {
-        System.out.println("+-----------------+");
-        System.out.print("| ");
-        for (Integer andar : filaRequisicoes) {
-            System.out.print(andar + " ");
-        }
-        System.out.println("|");
-        System.out.println("+-----------------+");
-        String status = (estado instanceof SubindoState) ? "subindo" : (estado instanceof DescendoState) ? "descendo" : "parado";
-        System.out.println("| " + status + " [" + andarAtual + "]     |");
-        System.out.println("+-----------------+");
-    }
-
-    public int getAndarAtual() {
-        return andarAtual;
-    }
+    public int getAndarAtual() {return andarAtual;}
+    public void setAndarAtual(int andarAtual) {this.andarAtual = andarAtual;}
 
     public List<Integer> getFilaRequisicoes() {
         return filaRequisicoes;
     }
+
+    public void setEstado(EstadoElevador novoEstado) {
+        this.estado = novoEstado;
+    }
+
+
+    public void requisitarAndar(int andar) {
+        if (andar < 0 || andar > numPavimentos) {
+            System.out.println("Andar inválido: " + andar);
+            return;
+        }
+        if (!filaRequisicoes.contains(andar) && andar != andarAtual) {
+            filaRequisicoes.add(andar);
+            System.out.println("Andar " + andar + " requisitado.");
+        }
+        notifyObservers();
+    }
+
+
+    public void abrirPortas(){portas.abrir();}
+    public void fecharPortas(){
+        portas.fechar();
+    }
+
+
+
+
+
+//    public void moverParaAndar(int andarDestino) {
+//        while (andarAtual != andarDestino) {
+//            if (andarAtual < andarDestino) {
+//                andarAtual++;
+//            } else if (andarAtual > andarDestino) {
+//                andarAtual--;
+//            }
+//
+//            exibirPainel();
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//
+//            if (!filaRequisicoes.isEmpty() && filaRequisicoes.get(0) == andarAtual) {
+//                System.out.println("Elevador chegou ao andar " + andarAtual + ". Portas abrindo...");
+//                filaRequisicoes.remove(0);
+//                setEstado(new ParadoState(this));
+//                System.out.println("Portas fechando...");
+//            }
+//        }
+//
+//        if (subindo && filaRequisicoes.stream().allMatch(a -> a < andarAtual)) {
+//            subindo = false;
+//            ordenarFila();
+//        }
+
+//        setEstado(new ParadoState(this));
+//    }
+
+
+    public void executar() {
+        while (!filaRequisicoes.isEmpty()) {
+            int destino = filaRequisicoes.get(0);
+            if (destino > andarAtual) {
+                setEstado(new SubindoState());
+            } else if (destino < andarAtual) {
+                setEstado(new DescendoState());
+            }
+            estado.executar(this);
+            if (andarAtual == destino) {
+                setEstado(new ParadoState());
+                estado.executar(this);
+                filaRequisicoes.remove(0);
+            }
+            notifyObservers();
+        }
+        setEstado(new ParadoState());
+        direcao = Direcao.parado;
+        System.out.println("Sem mais pedidos, Elevador parado no andar: " + andarAtual);
+        notifyObservers();
+    }
+
+    public void attatchObeserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    public void notifyObservers() {
+        for (Observer observer : observers) {
+            observer.atualizar();
+        }
+    }
+
 }
